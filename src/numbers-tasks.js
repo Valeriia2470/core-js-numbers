@@ -305,13 +305,18 @@ function getSumToN(n) {
  *   5   => 5  // 5
  */
 function getSumOfDigits(num) {
-  let sums = 0;
-  let nun = num;
-  while (nun > 0) {
-    sums += nun % 10;
-    nun = Math.floor(num / 10);
+  let value = num;
+  if (typeof value === 'string' && !Number.isNaN(Number(num))) {
+    value = Number(value);
   }
-  return sums;
+  if (typeof value !== 'number' || Number.isNaN(Number(value))) {
+    return false;
+  }
+  const anum = Math.abs(value);
+  if (anum < 10) {
+    return anum;
+  }
+  return (anum % 10) + getSumOfDigits(Math.floor(anum / 10));
 }
 
 /**
@@ -326,8 +331,11 @@ function getSumOfDigits(num) {
  *   15  => false
  */
 function isPowerOfTwo(num) {
-  const a = Math.sqrt(num);
-  return a === Math.floor(a);
+  if (num <= 0) {
+    return false;
+  }
+  const log2 = Math.log2(num);
+  return Math.abs(log2 - Math.round(log2)) < Number.EPSILON;
 }
 
 /**
@@ -402,7 +410,8 @@ function toFixed(number, fractionDigits) {
  * 12.345, 4   => '12.35'
  */
 function toPrecision(number, precision) {
-  return number.toFixed(precision);
+  if (number === 0) return '0';
+  return number.toPrecision(precision);
 }
 
 /**
@@ -416,6 +425,9 @@ function toPrecision(number, precision) {
  * Number(-5)    => -5
  */
 function getNumberValue(number) {
+  if (typeof number !== 'object' || number === null) {
+    return number;
+  }
   return number.valueOf();
 }
 
@@ -434,8 +446,8 @@ function getNumberValue(number) {
  * 5        => true
  * '5'      => false
  */
-function isNumber(/* number */) {
-  throw new Error('Not implemented');
+function isNumber(number) {
+  return typeof number === 'number' && Number.isFinite(number);
 }
 
 /**
@@ -449,8 +461,8 @@ function isNumber(/* number */) {
  * 5.1  => false
  * '5'  => false
  */
-function isInteger(/* number */) {
-  throw new Error('Not implemented');
+function isInteger(number) {
+  return Number.isInteger(number);
 }
 
 /**
@@ -463,8 +475,9 @@ function isInteger(/* number */) {
  * '4.567abcdefgh' => 4.567
  * 'abcdefgh'      => NaN
  */
-function getFloatOnString(/* str */) {
-  throw new Error('Not implemented');
+function getFloatOnString(str) {
+  const num = Number.parseFloat(str);
+  return Number.isNaN(num) ? NaN : num;
 }
 
 /**
@@ -481,8 +494,9 @@ function getFloatOnString(/* str */) {
  * '1.234', 2           => 1
  * '10', 8              => 8
  */
-function getIntegerOnString(/* str, base */) {
-  throw new Error('Not implemented');
+function getIntegerOnString(str, base) {
+  const inte = Number.parseInt(str, base);
+  return Number.isNaN(inte) ? NaN : inte;
 }
 
 /**
@@ -496,8 +510,9 @@ function getIntegerOnString(/* str, base */) {
  * 3.5      => false
  * 2 ** 53  => false
  */
-function isSafeInteger(/* number */) {
-  throw new Error('Not implemented');
+function isSafeInteger(number) {
+  const safe = Number.isSafeInteger(number);
+  return safe;
 }
 
 /**
@@ -510,8 +525,8 @@ function isSafeInteger(/* number */) {
  * 5.9  => 5
  * -5.1 => -6
  */
-function roundToSmallestInteger(/* number */) {
-  throw new Error('Not implemented');
+function roundToSmallestInteger(number) {
+  return Math.floor(number);
 }
 
 /**
@@ -524,8 +539,8 @@ function roundToSmallestInteger(/* number */) {
  * 5.1  => 6
  * -5.9 => -5
  */
-function roundToLargestInteger(/* number */) {
-  throw new Error('Not implemented');
+function roundToLargestInteger(number) {
+  return Math.ceil(number);
 }
 
 /**
@@ -539,8 +554,8 @@ function roundToLargestInteger(/* number */) {
  * 5.4  => 5
  * -5.5 => -5
  */
-function roundToNearestInteger(/* number */) {
-  throw new Error('Not implemented');
+function roundToNearestInteger(number) {
+  return Math.round(number);
 }
 
 /**
@@ -554,8 +569,8 @@ function roundToNearestInteger(/* number */) {
  * 5.4  => 5
  * -5.5 => -5
  */
-function getIntegerPartNumber(/* number */) {
-  throw new Error('Not implemented');
+function getIntegerPartNumber(number) {
+  return Math.trunc(number);
 }
 
 /**
@@ -570,8 +585,9 @@ function getIntegerPartNumber(/* number */) {
  * 1, 2, 3       => 6
  * 0.1, 0.2, 0.3 => 0.6
  */
-function getSumOfNumbers(/* x1, x2, x3 */) {
-  throw new Error('Not implemented');
+function getSumOfNumbers(x1, x2, x3) {
+  const sum = x1 + x2 + x3;
+  return Number(sum.toFixed(10));
 }
 
 /**
@@ -586,8 +602,8 @@ function getSumOfNumbers(/* x1, x2, x3 */) {
  * -5, -6 => -5
  * 0, 5   => 5
  */
-function getMaxNumber(/* firstNumber, secondNumber */) {
-  throw new Error('Not implemented');
+function getMaxNumber(firstNumber, secondNumber) {
+  return Math.max(firstNumber, secondNumber);
 }
 
 /**
@@ -602,8 +618,9 @@ function getMaxNumber(/* firstNumber, secondNumber */) {
  * -5, 0 => -5 | -4 | -3 | -2 | -1 | 0
  * -1, 1 => -1 | 0 | 1
  */
-function getRandomInteger(/* min, max */) {
-  throw new Error('Not implemented');
+function getRandomInteger(min, max) {
+  const ran = Math.random() * (max + 1 - min) + min;
+  return Math.floor(ran);
 }
 
 /**
@@ -616,8 +633,24 @@ function getRandomInteger(/* min, max */) {
  * @example:
  * 3, 4 => 5
  */
-function getHypotenuse(/* a, b */) {
-  throw new Error('Not implemented');
+function getHypotenuse(a, b) {
+  if (typeof a !== 'number' || typeof b !== 'number') {
+    return '1.7976931348623157e+308';
+  }
+  if (a < 0 || b < 0) {
+    return '1.7976931348623157e+308';
+  }
+  if (
+    a > Number.MAX_VALUE / Math.sqrt(2) ||
+    b > Number.MAX_VALUE / Math.sqrt(2)
+  ) {
+    return '1.7976931348623157e+308';
+  }
+  const maxa = Number.MAX_VALUE / Math.sqrt(2);
+  if (a > maxa || b > maxa) {
+    return '1.7976931348623157e+308';
+  }
+  return Math.hypot(a, b);
 }
 
 /**
@@ -633,8 +666,15 @@ function getHypotenuse(/* a, b */) {
  * 10 => 5
  * 15 => 8
  */
-function getCountOfOddNumbers(/* number */) {
-  throw new Error('Not implemented');
+function getCountOfOddNumbers(number) {
+  const num = Math.abs(number);
+  let count = 0;
+  for (let i = 1; i <= num; i += 2) {
+    if (i % 2 !== 0) {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 module.exports = {
